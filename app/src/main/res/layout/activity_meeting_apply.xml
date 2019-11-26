@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/meetingApply"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:orientation="vertical">
+
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp" />
+
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="会议申请信息表"
+        android:textSize="20sp"
+
+        />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+             />
+
+        <TableLayout
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:layout_height="match_parent">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/meetingapply">
+
+                <TextView
+                    android:id="@+id/textView15"
+                    style="@style/text"
+                    android:text="会议名称"
+                    android:textAlignment="center"
+                    />
+
+                <EditText
+                    android:id="@+id/editText10"
+                    style="@style/editext"
+                    android:inputType="textPersonName"
+                     />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/meetingapply">
+
+                <TextView
+                    android:id="@+id/textView16"
+                    style="@style/text"
+                    android:text="主办单位"
+                    android:textAlignment="center"
+                   />
+
+                <EditText
+                    android:id="@+id/editText11"
+                    style="@style/editext"
+                    android:inputType="textPersonName"
+                    />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/meetingapply">
+
+                <TextView
+                    android:id="@+id/textView17"
+                    style="@style/text"
+                    android:text="开会时间"
+                    android:textAlignment="center"
+                    />
+
+                <EditText
+                    android:id="@+id/editText12"
+                    style="@style/editext"
+                    android:inputType="textPersonName"
+                     />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/meetingapply">
+
+                <TextView
+                    android:id="@+id/textView18"
+                    style="@style/text"
+                    android:text="时长"
+                    android:textAlignment="center"
+                     />
+
+                <EditText
+                    android:id="@+id/editText13"
+                    style="@style/editext"
+                    android:inputType="textPersonName"
+                     />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/meetingapply">
+
+                <TextView
+                    android:id="@+id/textView20"
+                    style="@style/text"
+                    android:text="话筒"
+                    android:textAlignment="center"/>
+
+                <EditText
+                    android:id="@+id/editText14"
+                    style="@style/editext"
+                    android:inputType="textPersonName"
+                     />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/meetingapply">
+
+                <TextView
+                    android:id="@+id/textView19"
+                    style="@style/text"
+                    android:text="投影"
+                    android:textAlignment="center"/>
+
+                <EditText
+                    android:id="@+id/editText15"
+                    style="@style/editext"
+                    android:inputType="textPersonName"
+                     />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/meetingapply">
+
+                <TextView
+                    android:id="@+id/textView21"
+                    style="@style/text"
+                    android:textAlignment="center"
+                    android:text="人数" />
+
+                <EditText
+                    android:id="@+id/editText16"
+                    style="@style/editext"
+                    android:inputType="textPersonName"
+                     />
+            </TableRow>
+
+        </TableLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            />
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="选择参会人员"
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="5"
+        android:orientation="horizontal">
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <ListView
+            android:id="@+id/confereeListView"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:layout_weight="5" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/updateConfereeButton"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+
+        android:background="@drawable/corner"
+        android:text="重新选择参会名单"
+        android:textAlignment="center" />
+
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp" />
+
+    <Button
+        android:id="@+id/submitApplyButton"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/corner"
+
+        android:text="提交申请"
+        android:textAlignment="center"
+        android:layout_gravity="center" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/test"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="测试"
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
+</LinearLayout>
