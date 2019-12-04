@@ -17,26 +17,42 @@ import java.util.List;
  */
 
 public class meetingRoomAdapter extends ArrayAdapter<MeetingRoom> {
+
     private int resourceId;
     public meetingRoomAdapter(Context context, int textViewResourceId, List<MeetingRoom> objects) {
         super(context, textViewResourceId, objects);
         resourceId = textViewResourceId;
     }
+
+    private OnItemClickListener listener;
+
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        MeetingRoom meetingroom = getItem(position);
+        final MeetingRoom meetingroom = getItem(position);
         View view = LayoutInflater.from(getContext()).inflate(resourceId, parent, false);//这个是实例化一个我们自己写的界面Item
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener!=null)listener.onItemClick(meetingroom);
+            }
+        });
         LinearLayout linearLayout = view.findViewById(R.id.meeting);
 
         TextView meetingName = view.findViewById(R.id.meetingRoomName);
         TextView meetingDate = view.findViewById(R.id.meetingRoomDate);
         TextView meetingTime = view.findViewById(R.id.meetingRoomTime);
-
         meetingName.setText(meetingroom.getName());
         meetingDate.setText(meetingroom.getDate());
         meetingTime.setText(meetingroom.getTime());
-
-
         return view;
     }
+
+    public void setListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
+    interface OnItemClickListener{
+        void onItemClick(MeetingRoom meetingRoom);
+    }
+
 }

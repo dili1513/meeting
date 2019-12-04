@@ -5,6 +5,7 @@ package hmh;
  */
 
 public class Meeting {
+    private String ID;
     private String meetingName;
     private String meetingsponsor;
     private String meetingDate;
@@ -14,11 +15,12 @@ public class Meeting {
     private String microphone;
     private String num;
     private String shenqingzhuangtai;
-    public Meeting(String Name,String Date,String Time,String shenqingzhuangtai ){
+    public Meeting(String Name,String Date,String Time,String shenqingzhuangtai,String id){
         this.meetingName=Name;
         this.meetingDate=Date;
         this.meetingTime=Time;
         this.shenqingzhuangtai=shenqingzhuangtai;
+        this.ID = id;
     }
     public Meeting(String Name,String Sponsor,String Date,String Time,String Length,String Projector,String Microphone,String Num,String shenqingzhuangtai ){
         this.meetingName=Name;
@@ -58,5 +60,13 @@ public class Meeting {
     public String getProjector(){return this.projector;}
     public String getMicrophone(){return this.microphone;}
     public String getNum(){return this.num;}
+
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
 }
 

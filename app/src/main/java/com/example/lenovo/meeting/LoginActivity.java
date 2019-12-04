@@ -33,8 +33,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import android.util.Log;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import hmh.Httpclient;
 import hmh.applicant;
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -42,6 +51,7 @@ import static android.Manifest.permission.READ_CONTACTS;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity {
+    private static final String TAG = "LoginActivity";
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -70,11 +80,30 @@ public class LoginActivity extends AppCompatActivity {
     private CheckBox administratorCheckbox;
     private CheckBox userCheckbox;
     private boolean administrator;
+    private int identity=0;
+
+    private String res;
+    private int flag=0;
+
+    private String email="";
+    private String password="";
+    private Httpclient httpurl=new Httpclient();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        /*
+        Intent intent = new Intent(LoginActivity.this, userActivity.class);
+        intent.putExtra("adminID",email);
+        startActivity(intent);
+        finish();
+
+         */
+
 
         // Set up the login form.
         tiaoshi = (TextView) findViewById(R.id.textView);
@@ -87,6 +116,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(isChecked){
                     administratorCheckbox.setChecked(false);
                     administrator=true;
+                    identity=0;
                 }
             }
         });
@@ -96,9 +126,12 @@ public class LoginActivity extends AppCompatActivity {
                 if(isChecked){
                     userCheckbox.setChecked(false);
                     administrator=false;
+                    identity=1;
                 }
             }
         });
+
+        administratorCheckbox.setChecked(true);
 
 
 
@@ -122,6 +155,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        mEmailView.setText("songlinming");
+        mPasswordView.setText("159123");
+
     }
 
 
@@ -131,9 +167,11 @@ public class LoginActivity extends AppCompatActivity {
         mEmailView.setError(null);
         mPasswordView.setError(null);
 
+
+
         // 取得输入
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        email = mEmailView.getText().toString();
+        password = mPasswordView.getText().toString();
 
         //第一次
         tiaoshi.setText("第一次" + "email " + email + " password " + password);
@@ -164,46 +202,120 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             //这里的输入合法了
             //第二次
-            tiaoshi.setText("第二次" + "email " + email + " password " + password);
             user = new applicant(email, password);
-            if(administratorCheckbox.isChecked()){
-                if (user.adminlogin()) {
-                    tiaoshi.setText("管理员" + "email " + email + " password " + password);
-                    Log.d("result", "对比成功");
-                    Intent intent = new Intent(LoginActivity.this, adminActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    mPasswordView.setError(getString(R.string.error_incorrect_password));
-                    mPasswordView.requestFocus();
-                }
+            if (administratorCheckbox.isChecked()) {
+                sendRequest(email);
             }
-            if(userCheckbox.isChecked()){
-                if (user.userlogin()) {
-                    tiaoshi.setText("用户" + "email " + email + " password " + password);
-                    Log.d("result", "对比成功");
-                    Intent intent = new Intent(LoginActivity.this, userActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    mPasswordView.setError(getString(R.string.error_incorrect_password));
-                    mPasswordView.requestFocus();
-                }
-            }
+            if (userCheckbox.isChecked()) {
+                sendRequest(email);
 
+
+
+            }
         }
-    }
 
-    //判断账号密码是否合法
-    private boolean isEmailValid(String email) {
+        //判断账号密码是否合法
+
+    }private boolean isEmailValid (String email){
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        //return email.contains("@");
+        return true;
     }
 
-    private boolean isPasswordValid(String password) {
+    private boolean isPasswordValid (String password){
         //TODO: Replace this with your own logic
         return password.length() > 4;
     }
+    private void sendRequest(final String email){
+        new Thread(new Runnable(){
+            @Override
+            public void run(){
 
+
+                HttpURLConnection connection = null;
+                BufferedReader reader = null;
+                try {
+                    final URL urluser = new URL(httpurl.httpurl+":8080/CRUD/ListUserByname?name=" + email);
+                    final URL urladmin = new URL(httpurl.httpurl+":8080/CRUD/ListAdminByname?name=" + email);
+                    Log.d(TAG, "run: " + email);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tiaoshi.setText(urluser.toString());
+                        }
+                    });
+
+                    if (identity==0)
+                        connection = (HttpURLConnection) urluser.openConnection();
+                    if (identity==1)
+                        connection = (HttpURLConnection) urladmin.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setConnectTimeout(8000);
+                    connection.setReadTimeout(8000);
+                    InputStream in = connection.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(in));
+                    String line;
+                    final StringBuilder response = new StringBuilder();
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+
+                    }
+                    res=response.toString();
+                    flag=1;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tiaoshi.setText(urluser.toString());
+                            if (identity==0)
+                            {
+                                if (password.equals(res)) {
+                                    tiaoshi.setText("用户" + "email " + email + " password " + password+" res "+res);
+                                    Log.d("result", "对比成功");
+                                    Intent intent = new Intent(LoginActivity.this, userActivity.class);
+                                    intent.putExtra("userID",email);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+
+                                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                                    mPasswordView.requestFocus();
+                                }}
+
+                            if (identity==1){
+
+                                if (password.equals(res)) {
+                                    Log.d(TAG, "run: " + email);
+                                    Log.d("result", "对比成功");
+                                    Intent intent = new Intent(LoginActivity.this, adminActivity.class);
+                                    intent.putExtra("adminID",email);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                                    mPasswordView.requestFocus();
+                                }
+                            }
+
+                        }
+                    });
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
+                }
+
+            }
+        }).start();
+    }
 }
 

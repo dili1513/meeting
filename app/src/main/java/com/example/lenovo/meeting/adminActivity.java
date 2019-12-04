@@ -5,25 +5,39 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import hmh.Conferee;
+import hmh.AdminMeetingRoomAdapter;
+import hmh.Httpclient;
 import hmh.Meeting;
-import hmh.MeetingRoom;
+import hmh.MeetingRoomBean;
 import hmh.meetingAdapter;
-import hmh.meetingRoomAdapter;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class adminActivity extends AppCompatActivity {
+    private static final String TAG = "adminActivity";
 
     private LinearLayout adminmeetinglayout;
     private LinearLayout adminmeetingroomlayout;
@@ -33,7 +47,11 @@ public class adminActivity extends AppCompatActivity {
     private Button adminApplyMeetingButton;
     private Button adminRoomShareButton;
     private List<Meeting> meetingList=new ArrayList<>();
-    private List<MeetingRoom>meetingRoomList=new ArrayList<>();
+    //private List<MeetingRoomBean>meetingRoomList=new ArrayList<>();
+    private String meetingres;
+    private String roomres="sggsg";
+    private String adminID;
+    private Httpclient httpurl=new Httpclient();
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -67,6 +85,9 @@ public class adminActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin);
 
 
+        //获取ID
+        Intent intent=getIntent();
+        adminID=intent.getStringExtra("adminID");
 
         //布局
         adminmeetinglayout=(LinearLayout)findViewById(R.id.adminMeetinglayout);
@@ -86,11 +107,23 @@ public class adminActivity extends AppCompatActivity {
 
         //适配器
         initmeetinglist();
-        meetingAdapter meetingadapter=new meetingAdapter(adminActivity.this,R.layout.user_meeting,meetingList);
-        meetingListView.setAdapter(meetingadapter);
+        meetingListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Meeting meeting = meetingList.get(position);
+                Intent intent1 = new Intent(adminActivity.this,meetingApply.class);
+                intent1.putExtra("Name",meeting.getName());
+                intent1.putExtra("Date",meeting.getDate());
+                intent1.putExtra("Time",meeting.getTime());
+                intent1.putExtra("Shenqingzhuangtai",meeting.getShenqingzhuangtai());
+                intent1.putExtra("ID",meeting.getName());
+                startActivity(intent1);
+            }
+        });
+
         initmeetingroomlist();
-        meetingRoomAdapter meetingroomadapter=new meetingRoomAdapter(adminActivity.this,R.layout.user_meetingroom,meetingRoomList);
-        meetingRoomListView.setAdapter(meetingroomadapter);
+        //AdminMeetingRoomAdapter meetingroomadapter=new AdminMeetingRoomAdapter(adminActivity.this,R.layout.user_meetingroom,meetingRoomList);
+        //meetingRoomListView.setAdapter(meetingroomadapter);
 
         //按钮监听
         adminApplyMeetingButton.setOnClickListener(new View.OnClickListener() {
@@ -105,15 +138,18 @@ public class adminActivity extends AppCompatActivity {
                 roomShare();
             }
         });
-        meetingListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*meetingListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Meeting meeting=meetingList.get(position);
                 Toast.makeText(adminActivity.this,"添加成功",Toast.LENGTH_SHORT).show();
             }
         });
+
+         */
     }
     private void initmeetinglist(){
+        /*
         Meeting meeting1=new Meeting("后勤预算工作专题会","2019/10/15","1:00pm-3:00pm","已完成");
         Meeting meeting2=new Meeting("专题教育学习","2019/10/26","8:00am-9:00am","已分配会议室");
         Meeting meeting3=new Meeting("后勤综改专题会","2019/10/27","8:30am-10:00am","申请中...");
@@ -124,9 +160,73 @@ public class adminActivity extends AppCompatActivity {
         meetingList.add(meeting2);
         meetingList.add(meeting1);
 
+         */
+        new Thread(new Runnable(){
+            @Override
+            public void run(){
+                HttpURLConnection connection = null;
+                BufferedReader reader = null;
+                try {
+                    URL urlmeeting = new URL(httpurl.httpurl+":8080/meeting/findByAID?AID=" + adminID);
+                            //+adminID);
+                    Log.d(TAG, "run: " + urlmeeting);
+                    connection = (HttpURLConnection) urlmeeting.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setConnectTimeout(8000);
+                    connection.setReadTimeout(8000);
+                    InputStream in = connection.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(in));
+                    String line;
+                    final StringBuilder response = new StringBuilder();
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    meetingres=response.toString();
+                    //Log.d(TAG, "run: " + meetingres);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            List<Meeting> meetings = new ArrayList<>();
+                            if(!meetingres.equals("WTFnull")&&!roomres.equals("")){
+                                meetingres=meetingres+"|";
+                                String[] nameList=meetingres.split("\\|");
+                                for(int i=0;i<nameList.length;i++){
+                                    Log.d(TAG, "run: " + nameList[i]);
+                                    String[] listitem = nameList[i].split(";");
+                                    if (listitem.length>=4){
+                                        Meeting meeting1=new Meeting(listitem[0],listitem[1],listitem[2],listitem[3],0+"");
+                                        meetings.add(meeting1);
+                                    }
+                                }
+                            }
+                            meetingAdapter meetingadapter = new meetingAdapter(adminActivity.this, R.layout.user_meeting, meetings);
+                            meetingListView.setAdapter(meetingadapter);
+                            meetingList.clear();
+                            meetingList.addAll(meetings);
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (connection != null) {
+                        connection.disconnect();
+                    }
+                }
+            }
+        }).start();
+
+
 
     }
     private void initmeetingroomlist(){
+        /*
         MeetingRoom meetingroom1=new MeetingRoom("科研楼610","2019/10/15","1:00pm-3:00pm");
         MeetingRoom meetingroom2=new MeetingRoom("办510","2019/10/15","1:00pm-3:00pm");
         MeetingRoom meetingroom3=new MeetingRoom("学生发展中心","2019/10/15","1:00pm-3:00pm");
@@ -137,18 +237,98 @@ public class adminActivity extends AppCompatActivity {
         meetingRoomList.add(meetingroom3);
         meetingRoomList.add(meetingroom4);
 
+         */
+        final List<MeetingRoomBean> meetingRoomList = new ArrayList<>();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder()
+                        .url(httpurl.httpurl+":8080/MeetingRoom/ListMeetingRoom")
+                        .method("GET", null)
+                        .build();
+                Response response = client.newCall(request).execute();
+                String meetingrooms = response.body().string();
+                 //Log.d(TAG, "run: "+meetingrooms);
+                JSONArray jsonArray = new JSONArray(meetingrooms);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        MeetingRoomBean meetingRoom = new Gson().fromJson(jsonArray.get(i).toString(), MeetingRoomBean.class);
+                        meetingRoomList.add(meetingRoom);
+                    }
+
+                } catch (Exception e) {
+                    toast("连接失败");
+                    e.printStackTrace();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        AdminMeetingRoomAdapter meetingRoomAdapter=new AdminMeetingRoomAdapter(adminActivity.this,
+                                R.layout.user_meetingroom,
+                                meetingRoomList);
+                        meetingRoomAdapter.setListener(new AdminMeetingRoomAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(MeetingRoomBean meetingRoom) {
+                                edit(meetingRoom);
+                            }
+                        });
+                        meetingRoomListView.setAdapter(meetingRoomAdapter);
+                    }
+                });
+
+            }
+        }
+        ).start();
 
 
     }
     private void meetingApply(){
         Intent intent = new Intent(adminActivity.this,meetingApply.class);
+        intent.putExtra("name",adminID);
         startActivity(intent);
 
     }
     private void roomShare(){
         Intent intent = new Intent(adminActivity.this, userRoomShare.class);
+        intent.putExtra("name",adminID);
+        intent.putExtra("isAdmin", true);
         startActivity(intent);
+    }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initmeetingroomlist();
+        initmeetinglist();
+    }
+
+    private void toast(final String s){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(adminActivity.this, s, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void edit(MeetingRoomBean meetingRoomBean){
+
+        Intent intent = new Intent(this, MeetingRoomEditActivity.class);
+        intent.putExtra("Name", meetingRoomBean.getName());
+        intent.putExtra("ID", meetingRoomBean.getId()+"");
+        if (meetingRoomBean.getAdmname()!=null) {
+            Log.d(TAG, "edit: " +meetingRoomBean.getAdmname());
+            intent.putExtra("isAdmin", true);
+            intent.putExtra("name", meetingRoomBean.getAdmname());
+        }
+        if (meetingRoomBean.getUsername()!=null) {
+            Log.d(TAG, "edit: " +meetingRoomBean.getUsername());
+            intent.putExtra("isAdmin", false);
+            intent.putExtra("name", meetingRoomBean.getUsername());
+        }
+        startActivity(intent);
     }
 
 }

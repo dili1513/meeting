@@ -95,7 +95,7 @@
                 <EditText
                     android:id="@+id/editText12"
                     style="@style/editext"
-                    android:inputType="textPersonName"
+                    android:inputType="number"
                      />
             </TableRow>
 
@@ -107,14 +107,13 @@
                 <TextView
                     android:id="@+id/textView18"
                     style="@style/text"
-                    android:text="时长"
-                    android:textAlignment="center"
-                     />
+                    android:text="结束时间"
+                    android:textAlignment="center" />
 
                 <EditText
                     android:id="@+id/editText13"
                     style="@style/editext"
-                    android:inputType="textPersonName"
+                    android:inputType="number"
                      />
             </TableRow>
 
@@ -194,6 +193,38 @@
         android:textAlignment="center"
         android:textSize="20sp" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <EditText
+            android:id="@+id/editTextquery"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="输入学院" />
+
+        <Button
+            android:id="@+id/query"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="查询" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
+
     <Space
         android:layout_width="match_parent"
         android:layout_height="20dp" />
@@ -212,7 +243,7 @@
         <ListView
             android:id="@+id/confereeListView"
             android:layout_width="0dp"
-            android:layout_height="150dp"
+            android:layout_height="wrap_content"
             android:layout_weight="5" />
 
         <Space

@@ -36,12 +36,10 @@ public class meetingAdapter extends ArrayAdapter<Meeting> {
             TextView meetingDate = view.findViewById(R.id.meetingDate);
             TextView meetingTime = view.findViewById(R.id.meetingTime);
             TextView shenqingzhuangtai = view.findViewById(R.id.shenqingzhuangtai);
-
             meetingName.setText(meeting.getName());
             meetingDate.setText(meeting.getDate());
             meetingTime.setText(meeting.getTime());
             shenqingzhuangtai.setText(meeting.getShenqingzhuangtai());
-
             return view;
         }
 }
